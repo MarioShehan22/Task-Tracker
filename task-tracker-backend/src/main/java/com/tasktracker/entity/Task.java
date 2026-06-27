@@ -1,40 +1,54 @@
 package com.tasktracker.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.tasktracker.enums.Priority;
+import com.tasktracker.enums.TaskStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "task")
-@Data
+@Table(name = "tasks")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Task {
+public class Task extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taskId;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Title is required")
+    @Size(min = 3, max = 100)
+    @Column(nullable = false, length = 100)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @NotBlank(message = "Description is required")
+    @Size(max = 1000)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private TaskStatus status = TaskStatus.PENDING;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private Priority priority = Priority.MEDIUM;
+
+    @NotNull(message = "Due date is required")
+    @Future(message = "Due date must be in the future")
+    @Column(nullable = false)
+    private LocalDateTime dueDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id", nullable = false)
-    private TaskStatus status;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 }

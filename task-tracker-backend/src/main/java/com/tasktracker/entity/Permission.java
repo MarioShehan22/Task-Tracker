@@ -1,25 +1,42 @@
 package com.tasktracker.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.tasktracker.enums.ModuleType;
+import com.tasktracker.enums.PermissionType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "permission")
-@Data
+@Table(name = "permissions")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Permission {
+public class Permission extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long permissionId;
 
-    @Column(name = "permission_name", nullable = false)
-    private String permissionName;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, unique = true)
+    @NotNull
+    private PermissionType permissionName;
 
-    @Column(name = "module_name", nullable = false)
-    private String moduleName;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @NotNull
+    private ModuleType module;
+
+    @Column(length = 200)
+    private String description;
+
+    @OneToMany(mappedBy = "permission",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    @Builder.Default
+    private Set<RolePermission> rolePermissions = new HashSet<>();
 }
