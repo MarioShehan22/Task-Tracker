@@ -1,19 +1,18 @@
 package com.tasktracker.dto.response;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class DashboardResponse {
-
-    private long totalTasks;
-
-    private long pendingTasks;
-
-    private long inProgressTasks;
-
-    private long completedTasks;
-
-    private long highPriorityTasks;
+    private Long totalUsers;
+    private Long activeUsers;
+    private Long inactiveUsers;
+    private Long totalTasks;
+    private Long pendingTasks;
+    private Long completedTasks;
+    private Long totalLogs;
 }

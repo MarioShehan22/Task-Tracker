@@ -97,15 +97,6 @@ public class TaskServiceImpl implements TaskService {
         );
     }
 
-    // ================= GET CURRENT USER =================
-    private User getCurrentUser(Authentication authentication) {
-
-        String email = authentication.getName();
-
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-    }
-
     // ================= OTHERS =================
     @Override
     public TaskResponse getTaskById(Long id) {
@@ -117,20 +108,29 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Page<TaskResponse> getAllTasks(int page, int size, TaskStatus status, Long userId) {
+    public Page<TaskResponse> getAllTasks(
+            int page,
+            int size,
+            TaskStatus status,
+            Authentication authentication) {
+
+        User user = getCurrentUser(authentication);
 
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Task> tasks;
 
-        if (status != null && userId != null) {
-            tasks = taskRepository.findByUserUserIdAndStatus(userId, status, pageable);
-        } else if (status != null) {
-            tasks = taskRepository.findByStatus(status, pageable);
-        } else if (userId != null) {
-            tasks = taskRepository.findByUserUserId(userId, pageable);
+        if (status != null) {
+            tasks = taskRepository.findByUserUserIdAndStatus(
+                    user.getUserId(),
+                    status,
+                    pageable
+            );
         } else {
-            tasks = taskRepository.findAll(pageable);
+            tasks = taskRepository.findByUserUserId(
+                    user.getUserId(),
+                    pageable
+            );
         }
 
         return tasks.map(this::mapToResponse);
@@ -151,5 +151,41 @@ public class TaskServiceImpl implements TaskService {
                 .createdAt(task.getCreatedAt())
                 .updatedAt(task.getUpdatedAt())
                 .build();
+    }
+
+    @Override
+    public Page<TaskResponse> getAllTasksForAdmin(
+            int page,
+            int size,
+            TaskStatus status,
+            Long userId) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Task> tasks;
+
+        if (status != null && userId != null) {
+            tasks = taskRepository.findByUserUserIdAndStatus(userId, status, pageable);
+
+        } else if (status != null) {
+            tasks = taskRepository.findByStatus(status, pageable);
+
+        } else if (userId != null) {
+            tasks = taskRepository.findByUserUserId(userId, pageable);
+
+        } else {
+            tasks = taskRepository.findAll(pageable);
+        }
+
+        return tasks.map(this::mapToResponse);
+    }
+
+    // ================= GET CURRENT USER =================
+    private User getCurrentUser(Authentication authentication) {
+
+        String email = authentication.getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

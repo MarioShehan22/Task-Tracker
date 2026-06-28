@@ -1,6 +1,6 @@
 package com.tasktracker.dto.response;
 
-import com.tasktracker.enums.RoleType;
+import com.tasktracker.enums.ActionType;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,12 +10,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserResponse {
+public class LogResponse {
+    private Long logId;
+    private ActionType actionType;
+    private String description;
     private Long userId;
-    private String firstName;
-    private String lastName;
+    private String userName;
     private String email;
-    private RoleType role;
-    private Boolean active;
     private LocalDateTime createdAt;
 }

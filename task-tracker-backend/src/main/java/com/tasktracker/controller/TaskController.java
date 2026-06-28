@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -48,11 +47,12 @@ public class TaskController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) TaskStatus status,
-            @RequestParam(required = false) Long userId
+            Authentication authentication
     ) {
+
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        taskService.getAllTasks(page, size, status, userId),
+                        taskService.getAllTasks(page, size, status, authentication),
                         "Tasks fetched successfully"
                 )
         );

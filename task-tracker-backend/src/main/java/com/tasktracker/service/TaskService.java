@@ -8,14 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 
 public interface TaskService {
-
     TaskResponse createTask(CreateTaskRequest request, Authentication authentication);
-
     TaskResponse getTaskById(Long id);
-
-    Page<TaskResponse> getAllTasks(int page, int size, TaskStatus status, Long userId);
-
+    Page<TaskResponse> getAllTasks(int page, int size, TaskStatus status, Authentication authentication);
     TaskResponse updateTask(Long id, UpdateTaskRequest request, Authentication authentication);
-
     void deleteTask(Long id, Authentication authentication);
+    Page<TaskResponse> getAllTasksForAdmin(int page, int size, TaskStatus status, Long userId);
 }
